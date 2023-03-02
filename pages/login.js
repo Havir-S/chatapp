@@ -18,7 +18,7 @@ const Login = () => {
 
         <LoginContainer>
             <Logo 
-                src='https://assets.stickpng.com/images/580b57fcd9996e24bc43c543.png'
+                src='https://png.pngtree.com/png-vector/20221018/ourmid/pngtree-whatsapp-mobile-software-icon-png-image_6315991.png'
             />
             <Button onClick={signIn} variant='outlined'>Sign in with Google</Button>
         </LoginContainer>

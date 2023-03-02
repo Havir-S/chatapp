@@ -21,9 +21,9 @@ const Sidebar = () => {
     const userChatRef = query(collection(db, 'chats'), where('users', 'array-contains', user.email))
     const [chatsSnapshot, loading] = useCollection(userChatRef)
 
-    useEffect(() => {
-        console.log(chatsSnapshot)
-    }, [chatsSnapshot])
+    // useEffect(() => {
+    //     console.log(chatsSnapshot)
+    // }, [chatsSnapshot])
 
 
     /// CREATING NEW CHAT FROM USER INPUT
@@ -84,7 +84,16 @@ const Sidebar = () => {
 export default Sidebar;
 
 const Container = styled.div`
+    flex:.45;
+    border-right: 1px solid whitesmoke;
+    height: 100vh;
+    min-width: 300px;
+    max-width: 350px;
+    overflow-y: scroll;
 
+    ::-webkit-scrollbar {
+        display: none;
+    }
 `;
 
 

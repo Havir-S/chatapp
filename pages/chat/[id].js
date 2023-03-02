@@ -4,18 +4,23 @@ import Head from 'next/head'
 import React from 'react'
 import styled from 'styled-components'
 
-import {doc, where, getDoc, collection, query} from 'firebase/firestore'
-import { db } from '@/firebase'
+import {doc, where, getDoc, getDocs, collection, query, orderBy} from 'firebase/firestore'
+import { auth, db } from '@/firebase'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import getRecipientEmail from '@/utils/getRecipientEmail'
 
-const Chat = () => {
+const Chat = ({chat, messages}) => {
+    const [user] = useAuthState(auth)
+    // console.log(chat, messages);
+
   return (
     <Container>
         <Head>
-            <title>Chat</title>
+            <title>Chat with {getRecipientEmail(chat.users, user)}</title>
         </Head>
         <Sidebar />
         <ChatContainer>
-            <ChatScreen />
+            <ChatScreen chat={chat} messages={messages} />
         </ChatContainer>
     </Container>
   )
@@ -23,15 +28,37 @@ const Chat = () => {
 
 export default Chat
 
-//// GET CHATS
-// export async function getServerSideProps(context) {
-//     const ref = db.
 
-// ////GET MESSAGES
-//     return {
-//         {props}
-//     }
-// }
+//// PRE-FETCH THE CHAT AND MESSAGES
+export async function getServerSideProps(context) {
+    const docRef = doc(db, 'chats', context.query.id)
+
+    const q = query(collection(docRef, "messages"), orderBy('timestamp', 'asc'));
+    const messagesRes = await getDocs(q)
+
+    const messages = messagesRes.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    })).map(messages => ({
+        ...messages,
+        timestamp: messages.timestamp.toDate().getTime()
+    }))
+
+
+    ////PREPARE THE CHAT
+    const chatRes = await getDoc(docRef);
+    const chat = {
+        id: docRef.id,
+        ...chatRes.data()
+    }
+
+    return {
+        props: {
+            messages: JSON.stringify(messages),
+            chat: chat
+        }
+    }
+}
 
 const Container = styled.div`
     display: flex;
